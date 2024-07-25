@@ -34,6 +34,7 @@ class main:
     self.points = [[],[]]
     self.direction = []
     self.shader = []
+    self.polygons = []
   def sumdirection(self, g):
     self.vector = []
     self.vector.append(self.xto[g[0]])
@@ -52,7 +53,7 @@ class main:
     self.vector.append(0-self.vector[1])
     self.vector.append(self.pers-self.vector[2])
     self.direction.append(acos((self.vector[9]*self.vector[12]+self.vector[10]*self.vector[13]+self.vector[11]*self.vector[14])/math.sqrt((self.vector[9]**2+self.vector[10]**2+self.vector[11]**2)*(self.vector[12]**2+self.vector[13]**2+self.vector[14]**2))))
-    self.vector[0:2]=[0,0,0]
+    self.vector[0:3]=[0,0,0]
     for i in g:
       self.vector[0]+=self.xto[i]/len(g)
       self.vector[1]+=self.yto[i]/len(g)
@@ -78,8 +79,12 @@ while True:
     exe.mov(x[i],y[i],z[i])
     exe.points[0].append(exe.xto[i]*screen/(exe.pers-exe.zto[i]))
     exe.points[1].append(exe.yto[i]*screen/(exe.pers-exe.zto[i]))
-  for i in graphics:
-    exe.sumdirection(i)
+  for i in range(len(graphics)):
+    exe.sumdirection(graphics[i])
+    if exe.direction[i]<90:
+      temp = 2
+      while temp != len(graphics[i]):
+        exe.polygons.append()
   pygame.display.update()
   
   
