@@ -6,6 +6,8 @@ def sin(theta):
   return math.sin(math.radians(theta))
 def cos(theta):
   return math.cos(math.radians(theta))
+def acos(x):
+  return math.degrees(math.acos(x))
 def atan(x):
   return math.degrees(math.atan(x))
 def tan(theta):
@@ -13,10 +15,15 @@ def tan(theta):
 xy=0
 fov = atan(240/420)*2
 graphics = [[1,2,4,3],[1,5,6,2],[1,3,7,5],[6,8,4,2],[3,4,8,7],[7,8,6,5]]
+for i in range(len(graphics)):
+  for j in range(len(graphics[i])):
+    graphics[i][j]-=1
+  
 x = [50,-50,50,-50,50,-50,50,-50]
 y = [50,50,-50,-50,50,50,-50,-50]
 z = [50,50,50,50,-50,-50,-50,-50]
 scr = 700
+light = [-100,200,400]
 
 class main:
   def __init__(self):
@@ -25,11 +32,37 @@ class main:
     self.yto = []
     self.zto = []
     self.points = [[],[]]
-  def direction(self, g):
+    self.direction = []
+    self.shader = []
+  def sumdirection(self, g):
     self.vector = []
-    vector.append(self.xto[g[1]])
-    vector.append(self.yto[g[1]])
-    vector.append(self.zto[g[1]])
+    self.vector.append(self.xto[g[0]])
+    self.vector.append(self.yto[g[0]])
+    self.vector.append(self.zto[g[0]])
+    self.vector.append(self.xto[g[1]]-self.vector[0])
+    self.vector.append(self.yto[g[1]]-self.vector[1])
+    self.vector.append(self.zto[g[1]]-self.vector[2])
+    self.vector.append(self.xto[g[-1]]-self.vector[0])
+    self.vector.append(self.yto[g[-1]]-self.vector[1])
+    self.vector.append(self.zto[g[-1]]-self.vector[2])
+    self.vector.append(self.vector[4]*self.vector[8]-self.vector[5]*self.vector[7])
+    self.vector.append(self.vector[5]*self.vector[6]-self.vector[3]*self.vector[8])
+    self.vector.append(self.vector[3]*self.vector[7]-self.vector[4]*self.vector[6])
+    self.vector.append(0-self.vector[0])
+    self.vector.append(0-self.vector[1])
+    self.vector.append(self.pers-self.vector[2])
+    self.direction.append(acos((self.vector[9]*self.vector[12]+self.vector[10]*self.vector[13]+self.vector[11]*self.vector[14])/math.sqrt((self.vector[9]**2+self.vector[10]**2+self.vector[11]**2)*(self.vector[12]**2+self.vector[13]**2+self.vector[14]**2))))
+    self.vector[0:2]=[0,0,0]
+    for i in g:
+      self.vector[0]+=self.xto[i]/len(g)
+      self.vector[1]+=self.yto[i]/len(g)
+      self.vector[2]+=self.zto[i]/len(g)
+    self.vector.append(light[0]-self.vector[0])
+    self.vector.append(light[1]-self.vector[1])
+    self.vector.append(light[2]-self.vector[2])
+    self.shader.append(acos((self.vector[9]*self.vector[15]+self.vector[10]*self.vector[16]+self.vector[11]*self.vector[17])/math.sqrt((self.vector[9]**2+self.vector[10]**2+self.vector[11]**2)*(self.vector[15]**2+self.vector[16]**2+self.vector[17]**2))))
+    if self.shader[-1]>90:
+      self.shader[-1]=90
   def mov(self,x,y,z):
     self.xto.append(cos(zx)*cos(xy)*x-cos(zx)*sin(xy)*y+sin(zx)*z)
     self.yto.append((sin(yz)*sin(zx)*cos(xy)+cos(yz)*sin(xy))*x+(-1*sin(yz)*sin(zx)*sin(xy)+cos(yz)*cos(xy))*y-sin(yz)*cos(zx)*z)
@@ -46,7 +79,7 @@ while True:
     exe.points[0].append(exe.xto[i]*screen/(exe.pers-exe.zto[i]))
     exe.points[1].append(exe.yto[i]*screen/(exe.pers-exe.zto[i]))
   for i in graphics:
-    exe.direction(i)
+    exe.sumdirection(i)
   pygame.display.update()
   
   
