@@ -35,7 +35,7 @@ class main:
     self.direction = []
     self.shader = []
     self.polygons = []
-  def sumdirection(self, g):
+  def calcdirection(self, g):
     self.vector = []
     self.vector.append(self.xto[g[0]])
     self.vector.append(self.yto[g[0]])
@@ -80,7 +80,7 @@ while True:
     exe.points[0].append(exe.xto[i]*screen/(exe.pers-exe.zto[i]))
     exe.points[1].append(exe.yto[i]*screen/(exe.pers-exe.zto[i]))
   for i in range(len(graphics)):
-    exe.sumdirection(graphics[i])
+    exe.calcdirection(graphics[i])
     if exe.direction[i]<90:
       temp = 2
       while temp != len(graphics[i]):
