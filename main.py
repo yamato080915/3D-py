@@ -1,7 +1,7 @@
 import pygame, math
 
 pygame.init()
-screen = pygame.display.set_mode((480,360))
+root = pygame.display.set_mode((480,360))
 reflection = 15/100
 def sin(theta):
   return math.sin(math.radians(theta))
@@ -80,6 +80,7 @@ class main:
     self.zto.append((-1*cos(yz)*sin(zx)*cos(xy)+sin(yz)*sin(xy))*x+(cos(yz)*sin(zx)*sin(xy)+sin(yz)*cos(xy))*y+cos(yz)*cos(zx)*z)
 
 while True:
+  root.fill((255,255,255))
   mouseX, mouseY = pygame.mouse.get_pos()
   zx = mouseX*3/4
   yz = -1*mouseY
@@ -101,7 +102,7 @@ while True:
   for i in zsorted:
     temp = exe.polygons[i]
     pygame.draw.polygon(
-      screen, (30,144,255), 
+      root, (30,144,255), 
       [
         (exe.points[0][temp[1]],exe.points[1][temp[1]]),
         (exe.points[0][temp[2]],exe.points[1][temp[2]]),
