@@ -35,6 +35,8 @@ class main:
     self.direction = []
     self.shader = []
     self.polygons = []
+  def zsort(self):
+    pass
   def calcdirection(self, g):
     self.vector = []
     self.vector.append(self.xto[g[0]])
@@ -84,7 +86,9 @@ while True:
     if exe.direction[i]<90:
       temp = 2
       while temp != len(graphics[i]):
-        exe.polygons.append()
+        exe.polygons.append([i, graphics[i][0]], graphics[i][-2], graphics[i][-1], cos(exe.shader[i])*(1-reflection)+reflection, (exe.zto[graphics[i][0]]+exe.zto[graphics[i][-2]]+exe.zto[graphics[i][-1]])/3)
+  polygon = len(exe.polygons)
+  exe.zsort()
   pygame.display.update()
   
   
