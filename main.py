@@ -97,6 +97,17 @@ while True:
   polygon = len(exe.polygons)
   zsorted = exe.zsort()
   #graphic
+  for i in zsorted:
+    temp = exe.polygons[i]
+    pygame.draw.polygon(
+      screen, (30,144,255), 
+      [
+        (exe.points[0][temp[1]],exe.points[1][temp[1]]),
+        (exe.points[0][temp[2]],exe.points[1][temp[2]]),
+        (exe.points[0][temp[3]],exe.points[1][temp[3]])
+      ],
+      0
+    )
   pygame.display.update()
   
   
