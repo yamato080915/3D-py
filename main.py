@@ -1,4 +1,5 @@
 import pygame, math
+
 pygame.init()
 screen = pygame.display.set_mode((480,360))
 reflection = 15/100
@@ -93,7 +94,7 @@ while True:
     if exe.direction[i]<90:
       temp = 2
       while temp != len(graphics[i]):
-        exe.polygons.append([i, graphics[i][0]], graphics[i][-2], graphics[i][-1], cos(exe.shader[i])*(1-reflection)+reflection, (exe.zto[graphics[i][0]]+exe.zto[graphics[i][-2]]+exe.zto[graphics[i][-1]])/3)
+        exe.polygons.append([i, graphics[i][0], graphics[i][-2], graphics[i][-1], cos(exe.shader[i])*(1-reflection)+reflection, (exe.zto[graphics[i][0]]+exe.zto[graphics[i][-2]]+exe.zto[graphics[i][-1]])/3])
   polygon = len(exe.polygons)
   zsorted = exe.zsort()
   #graphic
@@ -109,6 +110,7 @@ while True:
       0
     )
   pygame.display.update()
+
   
   
   
