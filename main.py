@@ -94,8 +94,8 @@ class main:
 while True:
   root.fill((255,255,255))
   mouseX, mouseY = pygame.mouse.get_pos()
-  zx = mouseX*3/4
-  yz = -1*mouseY
+  zx = mouseX*3/4+240
+  yz = -1*mouseY+180
   screen = 240/tan(fov/2)
   exe = main()
   for i in range(len(x)):
