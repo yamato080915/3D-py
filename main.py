@@ -44,7 +44,11 @@ class main:
       temp.append(i[5])
     temp2 = sorted(temp)
     for i in temp2:
-      result.append(temp.index(i))
+      for j in [k for k, x in enumerate(temp) if x == i]:
+        if j in result:
+          pass
+        else:
+          result.append(j)
     return result
   def calcdirection(self, g):
     self.vector = []
@@ -101,7 +105,6 @@ while True:
   polygon = len(exe.polygons)
   zsorted = exe.zsort()
   #graphic
-  print(mouseX, mouseY)
   for i in zsorted:
     temp = exe.polygons[i]
     pygame.draw.polygon(
