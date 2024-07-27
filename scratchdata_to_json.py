@@ -11,7 +11,7 @@ def strindex(text, word):
         current = index+1
     return positions
 def main(filename, d):
-    template={"points":{"x":[],"y":[],"z":[]},"surface":[], "color":[]}
+    template={"points":[],"surface":[], "color":[]}
     if not ";" in d:return
     if d[0:2]!="{[":return
     index1 = strindex(d, "[")
@@ -20,18 +20,16 @@ def main(filename, d):
     y = eval(d[index1[1]:index2[1]+1])
     z = eval(d[index1[2]:index2[2]+1])
     if len(x)!=len(y) or len(x)!=len(z) or len(index1)!=len(index2):return
-    template["points"]["x"]=x
-    template["points"]["y"]=y
-    template["points"]["z"]=z
+    template["points"] = [str(tuple((x[i],y[i],z[i]))) for i in range(len(x))]
     for i in range(3,len(index1)):
         temp = d[index1[i]:index2[i]+1]
         if "(" in temp:
             color = temp[temp.index("("):temp.index(")")+1]
-            template["surface"].append([x-1 for x in eval(temp.replace(color, ""))])
+            template["surface"].append(str(tuple([x-1 for x in eval(temp.replace(color, ""))])))
             template["color"].append(color)
         else:
-            template["surface"].append([x-1 for x in eval(temp)])
-            template["color"].append((58,100,100))
+            template["surface"].append(str(tuple([x-1 for x in eval(temp)])))
+            template["color"].append("(58,100,100)")
     with open(f"./data/" + filename.replace(".txt",".json"), "w", encoding="utf-8") as f:
         json.dump(template, f, indent=2)
 for i in files:

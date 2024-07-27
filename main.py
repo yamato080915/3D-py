@@ -1,4 +1,4 @@
-import pygame, math, sys
+import pygame, math, sys, json
 from pygame.locals import *
 import colorsys
 
@@ -17,17 +17,16 @@ def tan(theta):
   return math.tan(math.radians(theta))
 xy=0
 fov = atan(240/420)*2
-graphics = [[1,2,4,3],[1,5,6,2],[1,3,7,5],[6,8,4,2],[3,4,8,7],[7,8,6,5]]
-for i in range(len(graphics)):
-  for j in range(len(graphics[i])):
-    graphics[i][j]-=1
-  
-x = [50,-50,50,-50,50,-50,50,-50]
-y = [50,50,-50,-50,50,50,-50,-50]
-z = [50,50,50,50,-50,-50,-50,-50]
-scr = 700
+with open("./data/truncated-icosahedron.json", "r", encoding="utf-8") as f:
+  jsond = json.load(f)
+x = [eval(i)[0] for i in jsond["points"]]
+y = [eval(i)[1] for i in jsond["points"]]
+z = [eval(i)[2] for i in jsond["points"]]
+graphics = [eval(i) for i in jsond["surface"]]
+color = (58,100,100)
+colors= jsond["color"]
+scr=700
 light = (-100,200,400)
-color = [58,100,100]
 def rgb(hsv, shade):
   h = hsv[0]/100
   s = hsv[1]/100
