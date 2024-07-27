@@ -27,10 +27,10 @@ def main(filename, d):
         temp = d[index1[i]:index2[i]+1]
         if "(" in temp:
             color = temp[temp.index("("):temp.index(")")+1]
-            template["surface"].append(tuple(eval(temp.replace(color, ""))))
-            template["color"].append(tuple(color))
+            template["surface"].append([x-1 for x in eval(temp.replace(color, ""))])
+            template["color"].append(color)
         else:
-            template["surface"].append(tuple(eval(temp)))
+            template["surface"].append([x-1 for x in eval(temp)])
             template["color"].append((58,100,100))
     with open(f"./data/" + filename.replace(".txt",".json"), "w", encoding="utf-8") as f:
         json.dump(template, f, indent=2)
