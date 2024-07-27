@@ -102,14 +102,12 @@ while True:
       while temp != len(graphics[i]):
         exe.polygons.append([i, graphics[i][0], graphics[i][temp-1], graphics[i][temp], cos(exe.shader[i])*(1-reflection)+reflection, (exe.zto[graphics[i][0]]+exe.zto[graphics[i][-2]]+exe.zto[graphics[i][-1]])/3])
         temp += 1
-  polygon = len(exe.polygons)
   zsorted = exe.zsort()
   #graphic
-  print(exe.polygons)
   for i in zsorted:
     temp = exe.polygons[i]
     pygame.draw.polygon(
-      root, (30,144,255), 
+      root, (30,144,255), #TODO shading
       [
         (exe.points[0][temp[1]]+240,exe.points[1][temp[1]]+180),
         (exe.points[0][temp[2]]+240,exe.points[1][temp[2]]+180),
@@ -118,7 +116,6 @@ while True:
       0
     )
   pygame.display.update()
-  break
   for event in pygame.event.get():
     if event.type == QUIT:
       pygame.quit()
