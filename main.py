@@ -27,10 +27,12 @@ y = [50,50,-50,-50,50,50,-50,-50]
 z = [50,50,50,50,-50,-50,-50,-50]
 scr = 700
 light = (-100,200,400)
-color = [0.58,1,1]
-color[0] *= 360/100
-color = colorsys.hsv_to_rgb(color[0], color[1], color[2])
-print(color)
+color = [58,100,100]
+def rgb(hsv, shade):
+  h = hsv[0]/100
+  s = hsv[1]/100
+  v = hsv[2]*shade/100
+  return colorsys.hsv_to_rgb(h,s,v)
 
 class main:
   def __init__(self):
@@ -112,7 +114,7 @@ while True:
   for i in zsorted:
     temp = exe.polygons[i]
     pygame.draw.polygon(
-      root, color, #TODO shading
+      root, rgb(color, temp[4]), #TODO shading
       [
         (exe.points[0][temp[1]]+240,exe.points[1][temp[1]]+180),
         (exe.points[0][temp[2]]+240,exe.points[1][temp[2]]+180),
