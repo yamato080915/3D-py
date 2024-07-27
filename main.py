@@ -32,7 +32,7 @@ def rgb(hsv, shade):
   h = hsv[0]/100
   s = hsv[1]/100
   v = hsv[2]*shade/100
-  return colorsys.hsv_to_rgb(h,s,v)
+  return tuple([x*255 for x in list(colorsys.hsv_to_rgb(h,s,v))])
 
 class main:
   def __init__(self):
