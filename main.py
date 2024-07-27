@@ -23,10 +23,9 @@ x = [eval(i)[0] for i in jsond["points"]]
 y = [eval(i)[1] for i in jsond["points"]]
 z = [eval(i)[2] for i in jsond["points"]]
 graphics = [eval(i) for i in jsond["surface"]]
-color = (58,100,100)
-colors= jsond["color"]
-scr=700
-light = (-100,200,400)
+color= [eval(i) for i in jsond["color"]]
+scr=jsond["screen"]
+light = (-100,-200,400)
 def rgb(hsv, shade):
   h = hsv[0]/100
   s = hsv[1]/100
@@ -113,7 +112,7 @@ while True:
   for i in zsorted:
     temp = exe.polygons[i]
     pygame.draw.polygon(
-      root, rgb(color, temp[4]), #TODO shading
+      root, rgb(color[temp[0]], temp[4]), #TODO shading
       [
         (exe.points[0][temp[1]]+240,exe.points[1][temp[1]]+180),
         (exe.points[0][temp[2]]+240,exe.points[1][temp[2]]+180),
