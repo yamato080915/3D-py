@@ -1,4 +1,5 @@
-import pygame, math
+import pygame, math, sys
+from pygame.locals import *
 
 pygame.init()
 root = pygame.display.set_mode((480,360))
@@ -96,52 +97,24 @@ while True:
       temp = 2
       while temp != len(graphics[i]):
         exe.polygons.append([i, graphics[i][0], graphics[i][-2], graphics[i][-1], cos(exe.shader[i])*(1-reflection)+reflection, (exe.zto[graphics[i][0]]+exe.zto[graphics[i][-2]]+exe.zto[graphics[i][-1]])/3])
+        temp += 1
   polygon = len(exe.polygons)
   zsorted = exe.zsort()
   #graphic
+  print(mouseX, mouseY)
   for i in zsorted:
     temp = exe.polygons[i]
     pygame.draw.polygon(
       root, (30,144,255), 
       [
-        (exe.points[0][temp[1]],exe.points[1][temp[1]]),
-        (exe.points[0][temp[2]],exe.points[1][temp[2]]),
-        (exe.points[0][temp[3]],exe.points[1][temp[3]])
+        (exe.points[0][temp[1]]+240,exe.points[1][temp[1]]+180),
+        (exe.points[0][temp[2]]+240,exe.points[1][temp[2]]+180),
+        (exe.points[0][temp[3]]+240,exe.points[1][temp[3]]+180)
       ],
       0
     )
   pygame.display.update()
-
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+  for event in pygame.event.get():
+    if event.type == QUIT:
+      pygame.quit()
+      sys.exit()
