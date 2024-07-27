@@ -1,5 +1,6 @@
 import pygame, math, sys
 from pygame.locals import *
+import colorsys
 
 pygame.init()
 root = pygame.display.set_mode((480,360))
@@ -25,7 +26,11 @@ x = [50,-50,50,-50,50,-50,50,-50]
 y = [50,50,-50,-50,50,50,-50,-50]
 z = [50,50,50,50,-50,-50,-50,-50]
 scr = 700
-light = [-100,200,400]
+light = (-100,200,400)
+color = [0.58,1,1]
+color[0] *= 360/100
+color = colorsys.hsv_to_rgb(color[0], color[1], color[2])
+print(color)
 
 class main:
   def __init__(self):
@@ -107,7 +112,7 @@ while True:
   for i in zsorted:
     temp = exe.polygons[i]
     pygame.draw.polygon(
-      root, (30,144,255), #TODO shading
+      root, color, #TODO shading
       [
         (exe.points[0][temp[1]]+240,exe.points[1][temp[1]]+180),
         (exe.points[0][temp[2]]+240,exe.points[1][temp[2]]+180),
