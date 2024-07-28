@@ -1,7 +1,7 @@
 from stl import mesh
 import json
 
-d = mesh.Mesh.from_file("./stldata.stl")
+d = mesh.Mesh.from_file("./effel.stl")
 p = d.vectors.reshape(-1,3).tolist()
 g = d.vectors.tolist()
 template={"points":[],"surface":[], "color":[],"screen":700}
@@ -14,5 +14,5 @@ for i in g:
     template["surface"].append(str(tuple(temp)))
 template["color"] = ["(58,100,100)" for i in range(len(template["surface"]))]
 template["screen"] = int(700*50/max([i[0] for i in p]))
-with open("./stl.json", "w", encoding="utf-8") as f:
+with open("./effel.json", "w", encoding="utf-8") as f:
     json.dump(template, f, indent=2)
