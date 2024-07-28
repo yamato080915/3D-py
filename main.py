@@ -17,7 +17,7 @@ def tan(theta):
   return math.tan(math.radians(theta))
 xy=0
 fov = atan(240/420)*2
-with open("./data/truncated-icosahedron.json", "r", encoding="utf-8") as f:
+with open("./stl.json", "r", encoding="utf-8") as f:
   jsond = json.load(f)
 x = [eval(i)[0] for i in jsond["points"]]
 y = [eval(i)[1] for i in jsond["points"]]
