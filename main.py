@@ -1,10 +1,20 @@
 import pygame, math, sys, json
 from pygame.locals import *
 import colorsys
+from tkinter import filedialog
+import stl_to_json as stl
+
+f = filedialog.askopenfilename(title="select 3d data", filetypes=[("json file", ".json"), ("stl files", ".stl")])
+if ".stl" in f:
+  jsond = stl.main(f)
+elif ".json" in f:
+  with open(f, "r", encoding="utf-8") as f:
+    jsond = json.load(f)
+else:sys.exit()
 
 pygame.init()
 root = pygame.display.set_mode((480,360))
-reflection = 15/100
+
 def sin(theta):
   return math.sin(math.radians(theta))
 def cos(theta):
@@ -15,10 +25,10 @@ def atan(x):
   return math.degrees(math.atan(x))
 def tan(theta):
   return math.tan(math.radians(theta))
+
+direction = 15/100
 xy=0
 fov = atan(240/420)*2
-with open("./stl.json", "r", encoding="utf-8") as f:
-  jsond = json.load(f)
 x = [eval(i)[0] for i in jsond["points"]]
 y = [eval(i)[1] for i in jsond["points"]]
 z = [eval(i)[2] for i in jsond["points"]]
