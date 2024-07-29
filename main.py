@@ -28,6 +28,8 @@ def tan(theta):
 
 reflection = 15/100
 xy=0
+yz=0
+zx=0
 fov = atan(240/420)*2
 x = [eval(i)[0] for i in jsond["points"]]
 y = [eval(i)[1] for i in jsond["points"]]
@@ -52,12 +54,12 @@ class main:
     self.direction = []
     self.shader = []
     self.polygons = []
-    self.sinyz = 0
-    self.sinzx = 0
-    self.sinxy = 0
-    self.cosyz = 0
-    self.coszx = 0
-    self.cosxy = 0
+    self.sinxy=sin(xy)
+    self.cosxy=cos(xy)
+    self.sinyz=sin(yz)
+    self.cosyz=cos(yz)
+    self.sinzx=sin(zx)
+    self.coszx=cos(zx)
   def zsort(self):
     result = []
     temp = []
@@ -66,9 +68,7 @@ class main:
     temp2 = sorted(temp)
     for i in temp2:
       for j in [k for k, x in enumerate(temp) if x == i]:
-        if j in result:
-          pass
-        else:
+        if not j in result:
           result.append(j)
     return result
   def calcdirection(self, g):
@@ -105,30 +105,21 @@ class main:
     self.yto.append((self.sinyz*self.sinzx*self.cosxy+self.cosyz*self.sinxy)*x+(-1*self.sinyz*self.sinzx*self.sinxy+self.cosyz*self.cosxy)*y-self.sinyz*self.coszx*z)
     self.zto.append((-1*self.cosyz*self.sinzx*self.cosxy+self.sinyz*self.sinxy)*x+(self.cosyz*self.sinzx*self.sinxy+self.sinyz*self.cosxy)*y+self.cosyz*self.coszx*z)
 
+screen = 240/tan(fov/2)
+exe = main()
 while True:
   root.fill((255,255,255))
   mouseX, mouseY = pygame.mouse.get_pos()
   zx = mouseX*3/4-240
   yz = -1*mouseY-180
-  screen = 240/tan(fov/2)
-  exe = main()
-  exe.sinxy=sin(xy)
-  exe.cosxy=cos(xy)
-  exe.sinyz=sin(yz)
-  exe.cosyz=cos(yz)
-  exe.sinzx=sin(zx)
-  exe.coszx=cos(zx)
+  exe.__init__()
   for i in range(len(x)):
     exe.mov(x[i],y[i],z[i])
-    exe.points[0].append(exe.xto[i]*screen/(exe.pers-exe.zto[i]))
-    exe.points[1].append(exe.yto[i]*screen/(exe.pers-exe.zto[i]))
+  exe.points[0] = [exe.xto[i]*screen/(exe.pers-exe.zto[i]) for i in range(len(x))]
+  exe.points[1] = [exe.yto[i]*screen/(exe.pers-exe.zto[i]) for i in range(len(x))]
   for i in range(len(graphics)):
     exe.calcdirection(graphics[i])
-    if exe.direction[i]<90:
-      temp = 2
-      while temp != len(graphics[i]):
-        exe.polygons.append([i, graphics[i][0], graphics[i][temp-1], graphics[i][temp], cos(exe.shader[i])*(1-reflection)+reflection, (exe.zto[graphics[i][0]]+exe.zto[graphics[i][-2]]+exe.zto[graphics[i][-1]])/3])
-        temp += 1
+  exe.polygons = [[i, graphics[i][0], graphics[i][temp-1], graphics[i][temp], cos(exe.shader[i])*(1-reflection)+reflection, (exe.zto[graphics[i][0]]+exe.zto[graphics[i][-2]]+exe.zto[graphics[i][-1]])/3] for i in range(len(graphics)) for temp in range(2, len(graphics[i])) if exe.direction[i]<90]
   zsorted = exe.zsort()
   #graphic
   for i in zsorted:
