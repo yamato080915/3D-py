@@ -1,10 +1,20 @@
 import pygame, math, sys, json
 from pygame.locals import *
 import colorsys
+from tkinter import filedialog
+import stl_to_json as stl
+
+f = filedialog.askopenfilename(title="select 3d data", filetypes=[("json file", ".json"), ("stl files", ".stl .STL")])
+if ".stl" in f.lower():
+  jsond = stl.main(f)
+elif ".json" in f:
+  with open(f, "r", encoding="utf-8") as f:
+    jsond = json.load(f)
+else:sys.exit()
 
 pygame.init()
 root = pygame.display.set_mode((480,360))
-reflection = 15/100
+
 def sin(theta):
   return math.sin(math.radians(theta))
 def cos(theta):
@@ -15,10 +25,12 @@ def atan(x):
   return math.degrees(math.atan(x))
 def tan(theta):
   return math.tan(math.radians(theta))
+
+reflection = 15/100
 xy=0
+yz=0
+zx=0
 fov = atan(240/420)*2
-with open("./data/truncated-icosahedron.json", "r", encoding="utf-8") as f:
-  jsond = json.load(f)
 x = [eval(i)[0] for i in jsond["points"]]
 y = [eval(i)[1] for i in jsond["points"]]
 z = [eval(i)[2] for i in jsond["points"]]
@@ -42,6 +54,12 @@ class main:
     self.direction = []
     self.shader = []
     self.polygons = []
+    self.sinxy=sin(xy)
+    self.cosxy=cos(xy)
+    self.sinyz=sin(yz)
+    self.cosyz=cos(yz)
+    self.sinzx=sin(zx)
+    self.coszx=cos(zx)
   def zsort(self):
     result = []
     temp = []
@@ -50,9 +68,7 @@ class main:
     temp2 = sorted(temp)
     for i in temp2:
       for j in [k for k, x in enumerate(temp) if x == i]:
-        if j in result:
-          pass
-        else:
+        if not j in result:
           result.append(j)
     return result
   def calcdirection(self, g):
@@ -85,28 +101,25 @@ class main:
     if self.shader[-1]>90:
       self.shader[-1]=90
   def mov(self,x,y,z):
-    self.xto.append(cos(zx)*cos(xy)*x-cos(zx)*sin(xy)*y+sin(zx)*z)
-    self.yto.append((sin(yz)*sin(zx)*cos(xy)+cos(yz)*sin(xy))*x+(-1*sin(yz)*sin(zx)*sin(xy)+cos(yz)*cos(xy))*y-sin(yz)*cos(zx)*z)
-    self.zto.append((-1*cos(yz)*sin(zx)*cos(xy)+sin(yz)*sin(xy))*x+(cos(yz)*sin(zx)*sin(xy)+sin(yz)*cos(xy))*y+cos(yz)*cos(zx)*z)
+    self.xto.append(self.coszx*self.cosxy*x-self.coszx*self.sinxy*y+self.sinzx*z)
+    self.yto.append((self.sinyz*self.sinzx*self.cosxy+self.cosyz*self.sinxy)*x+(-1*self.sinyz*self.sinzx*self.sinxy+self.cosyz*self.cosxy)*y-self.sinyz*self.coszx*z)
+    self.zto.append((-1*self.cosyz*self.sinzx*self.cosxy+self.sinyz*self.sinxy)*x+(self.cosyz*self.sinzx*self.sinxy+self.sinyz*self.cosxy)*y+self.cosyz*self.coszx*z)
 
+screen = 240/tan(fov/2)
+exe = main()
 while True:
   root.fill((255,255,255))
   mouseX, mouseY = pygame.mouse.get_pos()
   zx = mouseX*3/4-240
   yz = -1*mouseY-180
-  screen = 240/tan(fov/2)
-  exe = main()
+  exe.__init__()
   for i in range(len(x)):
     exe.mov(x[i],y[i],z[i])
-    exe.points[0].append(exe.xto[i]*screen/(exe.pers-exe.zto[i]))
-    exe.points[1].append(exe.yto[i]*screen/(exe.pers-exe.zto[i]))
+  exe.points[0] = [exe.xto[i]*screen/(exe.pers-exe.zto[i]) for i in range(len(x))]
+  exe.points[1] = [exe.yto[i]*screen/(exe.pers-exe.zto[i]) for i in range(len(x))]
   for i in range(len(graphics)):
     exe.calcdirection(graphics[i])
-    if exe.direction[i]<90:
-      temp = 2
-      while temp != len(graphics[i]):
-        exe.polygons.append([i, graphics[i][0], graphics[i][temp-1], graphics[i][temp], cos(exe.shader[i])*(1-reflection)+reflection, (exe.zto[graphics[i][0]]+exe.zto[graphics[i][-2]]+exe.zto[graphics[i][-1]])/3])
-        temp += 1
+  exe.polygons = [[i, graphics[i][0], graphics[i][temp-1], graphics[i][temp], cos(exe.shader[i])*(1-reflection)+reflection, (exe.zto[graphics[i][0]]+exe.zto[graphics[i][-2]]+exe.zto[graphics[i][-1]])/3] for i in range(len(graphics)) for temp in range(2, len(graphics[i])) if exe.direction[i]<90]
   zsorted = exe.zsort()
   #graphic
   for i in zsorted:
