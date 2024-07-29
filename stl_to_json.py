@@ -7,10 +7,11 @@ def main(file):
     template={"points":[],"surface":[], "color":[],"screen":700}
     for i in p:
         template["points"].append(str(tuple(i)))
+    indexer = {tuple(value): index for index, value in enumerate(p)}
     for i in g:
         temp = []
         for j in i:
-            temp.append(p.index(j))
+            temp.append(indexer[tuple(j)])
         template["surface"].append(str(tuple(temp)))
     template["color"] = ["(58,100,100)" for i in range(len(template["surface"]))]
     template["screen"] = int(700*50/max([i[0] for i in p]))

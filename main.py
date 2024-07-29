@@ -4,8 +4,8 @@ import colorsys
 from tkinter import filedialog
 import stl_to_json as stl
 
-f = filedialog.askopenfilename(title="select 3d data", filetypes=[("json file", ".json"), ("stl files", ".stl")])
-if ".stl" in f:
+f = filedialog.askopenfilename(title="select 3d data", filetypes=[("json file", ".json"), ("stl files", ".stl .STL")])
+if ".stl" in f.lower():
   jsond = stl.main(f)
 elif ".json" in f:
   with open(f, "r", encoding="utf-8") as f:
@@ -26,7 +26,7 @@ def atan(x):
 def tan(theta):
   return math.tan(math.radians(theta))
 
-direction = 15/100
+reflection = 15/100
 xy=0
 fov = atan(240/420)*2
 x = [eval(i)[0] for i in jsond["points"]]
