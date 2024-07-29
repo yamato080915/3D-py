@@ -52,6 +52,12 @@ class main:
     self.direction = []
     self.shader = []
     self.polygons = []
+    self.sinyz = 0
+    self.sinzx = 0
+    self.sinxy = 0
+    self.cosyz = 0
+    self.coszx = 0
+    self.cosxy = 0
   def zsort(self):
     result = []
     temp = []
@@ -95,9 +101,9 @@ class main:
     if self.shader[-1]>90:
       self.shader[-1]=90
   def mov(self,x,y,z):
-    self.xto.append(cos(zx)*cos(xy)*x-cos(zx)*sin(xy)*y+sin(zx)*z)
-    self.yto.append((sin(yz)*sin(zx)*cos(xy)+cos(yz)*sin(xy))*x+(-1*sin(yz)*sin(zx)*sin(xy)+cos(yz)*cos(xy))*y-sin(yz)*cos(zx)*z)
-    self.zto.append((-1*cos(yz)*sin(zx)*cos(xy)+sin(yz)*sin(xy))*x+(cos(yz)*sin(zx)*sin(xy)+sin(yz)*cos(xy))*y+cos(yz)*cos(zx)*z)
+    self.xto.append(self.coszx*self.cosxy*x-self.coszx*self.sinxy*y+self.sinzx*z)
+    self.yto.append((self.sinyz*self.sinzx*self.cosxy+self.cosyz*self.sinxy)*x+(-1*self.sinyz*self.sinzx*self.sinxy+self.cosyz*self.cosxy)*y-self.sinyz*self.coszx*z)
+    self.zto.append((-1*self.cosyz*self.sinzx*self.cosxy+self.sinyz*self.sinxy)*x+(self.cosyz*self.sinzx*self.sinxy+self.sinyz*self.cosxy)*y+self.cosyz*self.coszx*z)
 
 while True:
   root.fill((255,255,255))
@@ -106,6 +112,12 @@ while True:
   yz = -1*mouseY-180
   screen = 240/tan(fov/2)
   exe = main()
+  exe.sinxy=sin(xy)
+  exe.cosxy=cos(xy)
+  exe.sinyz=sin(yz)
+  exe.cosyz=cos(yz)
+  exe.sinzx=sin(zx)
+  exe.coszx=cos(zx)
   for i in range(len(x)):
     exe.mov(x[i],y[i],z[i])
     exe.points[0].append(exe.xto[i]*screen/(exe.pers-exe.zto[i]))
