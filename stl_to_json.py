@@ -1,5 +1,5 @@
 from stl import mesh
-import json
+import json, os, sys
 def main(file):
     d = mesh.Mesh.from_file(file)
     p = d.vectors.reshape(-1,3).tolist()
@@ -18,6 +18,10 @@ def main(file):
     return template
 
 if __name__ == '__main__':
-    data = main("./effel.stl")
-    with open("./effel.json", "w", encoding="utf-8") as f:
+    file = input("enter the file path(.stl)")
+    if os.path.splitext(file)[1].lower() != ".stl":
+        print("stl file only!")
+        sys.exit()
+    data = main(file)
+    with open(f"{os.path.splitext(os.path.basename(file))[0]}.json", "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)

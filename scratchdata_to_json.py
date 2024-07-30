@@ -1,5 +1,5 @@
 import os, json
-files = os.listdir("./scratchdata/")
+file = input("enter the file path(.txt)")
 def strindex(text, word):
     positions = []
     current = 0
@@ -33,7 +33,6 @@ def main(filename, d):
     template["screen"] = int(d[d.index(";")+1:])
     with open(f"./data/" + filename.replace(".txt",".json"), "w", encoding="utf-8") as f:
         json.dump(template, f, indent=2)
-for i in files:
-    with open(f"./scratchdata/{i}", "r", encoding="utf-8") as f:
-        data = f.read()
-        main(i,data)
+with open(file, "r", encoding="utf-8") as f:
+    data = f.read()
+    main(file,data)
