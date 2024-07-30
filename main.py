@@ -37,7 +37,7 @@ z = [eval(i)[2] for i in data["points"]]
 graphics = [eval(i) for i in data["surface"]]
 color= [eval(i) for i in data["color"]]
 scr=data["screen"]
-light = (-100,-200,400)
+light = (-100,-200,400)#???y座標は正じゃないとおかしい　負にすると正しい動作をする
 def rgb(hsv, shade):
   h = hsv[0]/100
   s = hsv[1]/100
