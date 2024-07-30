@@ -7,10 +7,10 @@ def json_to_scr(file):
     x = [eval(i)[0] for i in d["points"]]
     y = [eval(i)[1] for i in d["points"]]
     z = [eval(i)[2] for i in d["points"]]
-    g = [f'{str(list(eval(d["surface"][i])))[:-1]}{d["color"][i]}]' for i in range(len(d["surface"]))]
+    g = [f'{str([i+1 for i in list(eval(d["surface"][i]))])[:-1]}{d["color"][i]}]' for i in range(len(d["surface"]))]
     data = "{"+f"{x},{y},{z}"+"}{"+str(g)[1:-1]+"};"+str(d["screen"])
     return data.replace(" ","").replace("'","").replace('"','')
-    
+
 def stl_to_scr(file):
     d = mesh.Mesh.from_file(file)
     p = d.vectors.reshape(-1,3).tolist()
@@ -23,7 +23,7 @@ def stl_to_scr(file):
     for i in g:
         temp = []
         for j in i:
-            temp.append(indexer[tuple(j)])
+            temp.append(indexer[tuple(j)]+1)
         graphics.append(temp)
     data = "{" + str(graphics)[1:-1].replace("]","(58,100,100)]") + "}"
     screen = int(700*50/max(x))
