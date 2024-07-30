@@ -31,7 +31,7 @@ def main(filename, d):
             template["surface"].append(str(tuple([x-1 for x in eval(temp)])))
             template["color"].append("(58,100,100)")
     template["screen"] = int(d[d.index(";")+1:])
-    with open(f"./data/" + filename.replace(".txt",".json"), "w", encoding="utf-8") as f:
+    with open(filename.replace(".txt",".json"), "w", encoding="utf-8") as f:
         json.dump(template, f, indent=2)
 with open(file, "r", encoding="utf-8") as f:
     data = f.read()
