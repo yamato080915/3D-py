@@ -4,12 +4,12 @@ import colorsys
 from tkinter import filedialog
 import stl_to_json as stl
 
-f = filedialog.askopenfilename(title="select 3d data", filetypes=[("json file", ".json"), ("stl files", ".stl .STL")])
+f = filedialog.askopenfilename(title="select 3d data", filetypes=[("supported files", ".json .stl .STL"), ("json files", ".json"), ("stl files", ".stl .STL"), ("all files", "*.*")])
 if ".stl" in f.lower():
-  jsond = stl.main(f)
+  data = stl.main(f)
 elif ".json" in f:
   with open(f, "r", encoding="utf-8") as f:
-    jsond = json.load(f)
+    data = json.load(f)
 else:sys.exit()
 
 pygame.init()
@@ -31,12 +31,12 @@ xy=0
 yz=0
 zx=0
 fov = atan(240/420)*2
-x = [eval(i)[0] for i in jsond["points"]]
-y = [eval(i)[1] for i in jsond["points"]]
-z = [eval(i)[2] for i in jsond["points"]]
-graphics = [eval(i) for i in jsond["surface"]]
-color= [eval(i) for i in jsond["color"]]
-scr=jsond["screen"]
+x = [eval(i)[0] for i in data["points"]]
+y = [eval(i)[1] for i in data["points"]]
+z = [eval(i)[2] for i in data["points"]]
+graphics = [eval(i) for i in data["surface"]]
+color= [eval(i) for i in data["color"]]
+scr=data["screen"]
 light = (-100,-200,400)
 def rgb(hsv, shade):
   h = hsv[0]/100
@@ -117,8 +117,8 @@ while True:
     exe.mov(x[i],y[i],z[i])
   exe.points[0] = [exe.xto[i]*screen/(exe.pers-exe.zto[i]) for i in range(len(x))]
   exe.points[1] = [exe.yto[i]*screen/(exe.pers-exe.zto[i]) for i in range(len(x))]
-  for i in range(len(graphics)):
-    exe.calcdirection(graphics[i])
+  for i in graphics:
+    exe.calcdirection(i)
   exe.polygons = [[i, graphics[i][0], graphics[i][temp-1], graphics[i][temp], cos(exe.shader[i])*(1-reflection)+reflection, (exe.zto[graphics[i][0]]+exe.zto[graphics[i][-2]]+exe.zto[graphics[i][-1]])/3] for i in range(len(graphics)) for temp in range(2, len(graphics[i])) if exe.direction[i]<90]
   zsorted = exe.zsort()
   #graphic
