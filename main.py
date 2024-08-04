@@ -1,8 +1,8 @@
-import pygame, math, sys, json
+import pygame, math, sys, json, colorsys
 from pygame.locals import *
-import colorsys
 from tkinter import filedialog
 import stl_to_json as stl
+from ast import literal_eval
 
 f = filedialog.askopenfilename(title="select 3d data", filetypes=[("supported files", ".json .stl .STL"), ("json files", ".json"), ("stl files", ".stl .STL"), ("all files", "*.*")])
 if ".stl" in f.lower():
@@ -31,11 +31,11 @@ xy=0
 yz=0
 zx=0
 fov = atan(240/420)*2
-x = [eval(i)[0] for i in data["points"]]
-y = [eval(i)[1] for i in data["points"]]
-z = [eval(i)[2] for i in data["points"]]
-graphics = [eval(i) for i in data["surface"]]
-color= [eval(i) for i in data["color"]]
+x = [literal_eval(i)[0] for i in data["points"]]
+y = [literal_eval(i)[1] for i in data["points"]]
+z = [literal_eval(i)[2] for i in data["points"]]
+graphics = [literal_eval(i) for i in data["surface"]]
+color= [literal_eval(i) for i in data["color"]]
 scr=data["screen"]
 light = (-100,-200,400)#???y座標は正じゃないとおかしい　負にすると正しい動作をする
 def rgb(hsv, shade):
