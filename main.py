@@ -3,6 +3,7 @@ from pygame.locals import *
 from tkinter import filedialog
 import stl_to_json as stl
 from ast import literal_eval
+from time import perf_counter
 
 f = filedialog.askopenfilename(title="select 3d data", filetypes=[("supported files", ".json .stl .STL"), ("json files", ".json"), ("stl files", ".stl .STL"), ("all files", "*.*")])
 if ".stl" in f.lower():
@@ -107,8 +108,19 @@ class main:
 
 screen = 240/tan(fov/2)
 exe = main()
+FONTNAME = None
+FONTSIZE = 30
+string = "fps:0"
+font = pygame.font.SysFont(FONTNAME, FONTSIZE)
+timestamp = perf_counter()
+count = 0
 while True:
+  count += 1
   root.fill((255,255,255))
+  if count >= int(string.replace("fps:", "")):
+    text = font.render(string, False, (0,0,0), (255, 255, 255))
+    count = 0
+  root.blit(text, (0,0))
   mouseX, mouseY = pygame.mouse.get_pos()
   zx = mouseX*3/4-180
   yz = -1*mouseY-180
@@ -138,3 +150,5 @@ while True:
     if event.type == QUIT:
       pygame.quit()
       sys.exit()
+  string = f"fps:{int(1/(perf_counter()-timestamp))}"
+  timestamp = perf_counter()
