@@ -110,7 +110,7 @@ exe = main()
 while True:
   root.fill((255,255,255))
   mouseX, mouseY = pygame.mouse.get_pos()
-  zx = mouseX*3/4-240
+  zx = mouseX*3/4-180
   yz = -1*mouseY-180
   exe.__init__()
   for i in range(len(x)):
