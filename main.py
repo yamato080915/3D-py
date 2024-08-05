@@ -5,16 +5,28 @@ import stl_to_json as stl
 from ast import literal_eval
 from time import perf_counter
 
-f = filedialog.askopenfilename(title="select 3d data", filetypes=[("supported files", ".json .stl .STL"), ("json files", ".json"), ("stl files", ".stl .STL"), ("all files", "*.*")])
-if ".stl" in f.lower():
-  data = stl.main(f)
-elif ".json" in f:
-  with open(f, "r", encoding="utf-8") as f:
-    data = json.load(f)
-else:sys.exit()
-
 pygame.init()
 root = pygame.display.set_mode((480,360))
+
+def fileselect(f):
+  global data, x, y, z, graphics, color, scr
+  data = ""
+  if ".stl" in f.lower():
+    data = stl.main(f)
+  elif ".json" in f.lower():
+    with open(f, "r", encoding="utf-8") as f:
+      data = json.load(f)
+  if data != "":
+    x = [literal_eval(i)[0] for i in data["points"]]
+    y = [literal_eval(i)[1] for i in data["points"]]
+    z = [literal_eval(i)[2] for i in data["points"]]
+    graphics = [literal_eval(i) for i in data["surface"]]
+    color= [literal_eval(i) for i in data["color"]]
+    scr=data["screen"]
+
+f = filedialog.askopenfilename(title="select 3d data", filetypes=[("supported files", ".json .stl .STL"), ("json files", ".json"), ("stl files", ".stl .STL"), ("all files", "*.*")])
+fileselect(f)
+if data == "":sys.exit()
 
 def sin(theta):
   return math.sin(math.radians(theta))
@@ -32,12 +44,6 @@ xy=0
 yz=0
 zx=0
 fov = atan(240/420)*2
-x = [literal_eval(i)[0] for i in data["points"]]
-y = [literal_eval(i)[1] for i in data["points"]]
-z = [literal_eval(i)[2] for i in data["points"]]
-graphics = [literal_eval(i) for i in data["surface"]]
-color= [literal_eval(i) for i in data["color"]]
-scr=data["screen"]
 light = (-100,-200,400)#???y座標は正じゃないとおかしい　負にすると正しい動作をする
 def rgb(hsv, shade):
   h = hsv[0]/100
@@ -115,6 +121,10 @@ font = pygame.font.SysFont(FONTNAME, FONTSIZE)
 timestamp = perf_counter()
 count = 0
 while True:
+  key_pressed = pygame.key.get_pressed()
+  if key_pressed[pygame.K_LCTRL] and key_pressed[pygame.K_o]:
+    f = filedialog.askopenfilename(title="select 3d data", filetypes=[("supported files", ".json .stl .STL"), ("json files", ".json"), ("stl files", ".stl .STL"), ("all files", "*.*")])
+    fileselect(f)
   count += 1
   root.fill((255,255,255))
   if count >= int(string.replace("fps:", "")):
