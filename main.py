@@ -3,7 +3,8 @@ from pygame.locals import *
 from tkinter import filedialog
 import stl_to_json as stl
 from ast import literal_eval
-from time import perf_counter
+from time import perf_counter, sleep
+import threading
 
 pygame.init()
 root = pygame.display.set_mode((480,360))
@@ -24,8 +25,24 @@ def fileselect(f):
     color= [literal_eval(i) for i in data["color"]]
     scr=data["screen"]
 
-f = filedialog.askopenfilename(title="select 3d data", filetypes=[("supported files", ".json .stl .STL"), ("json files", ".json"), ("stl files", ".stl .STL"), ("all files", "*.*")])
+f = ""
+def update():
+  global f
+  f = filedialog.askopenfilename(title="select 3d data", filetypes=[("supported files", ".json .stl"), ("json files", ".json"), ("stl files", ".stl .STL"), ("all files", "*.*")])
+def thread():
+  th = threading.Thread(target=update, daemon=True)
+  th.start()
+  while th.is_alive():
+    root.fill((255,255,255))
+    pygame.display.update()
+    for event in pygame.event.get():
+      if event.type == QUIT:
+        pygame.quit()
+        sys.exit()
+      if f!="":break
+thread()
 fileselect(f)
+
 if data == "":sys.exit()
 
 def sin(theta):
@@ -114,21 +131,21 @@ class main:
 
 screen = 240/tan(fov/2)
 exe = main()
-FONTNAME = None
-FONTSIZE = 30
-string = "fps:0"
-font = pygame.font.SysFont(FONTNAME, FONTSIZE)
+fps = 0
+frame = 0
+font = pygame.font.SysFont(None, 20)
 timestamp = perf_counter()
 count = 0
+limit = 120
 while True:
   key_pressed = pygame.key.get_pressed()
   if key_pressed[pygame.K_LCTRL] and key_pressed[pygame.K_o]:
-    f = filedialog.askopenfilename(title="select 3d data", filetypes=[("supported files", ".json .stl .STL"), ("json files", ".json"), ("stl files", ".stl .STL"), ("all files", "*.*")])
+    thread()
     fileselect(f)
   count += 1
   root.fill((255,255,255))
-  if count >= int(string.replace("fps:", "")):
-    text = font.render(string, False, (0,0,0), (255, 255, 255))
+  if count >= fps:
+    text = font.render(f"fps:{fps}   render latency:{-1*frame}ms", False, (0,0,0), (255, 255, 255))
     count = 0
   root.blit(text, (0,0))
   mouseX, mouseY = pygame.mouse.get_pos()
@@ -147,7 +164,7 @@ while True:
   for i in zsorted:
     temp = exe.polygons[i]
     pygame.draw.polygon(
-      root, rgb(color[temp[0]], temp[4]), #TODO shading
+      root, rgb(color[temp[0]], temp[4]), 
       [
         (exe.points[0][temp[1]]+240,exe.points[1][temp[1]]+180),
         (exe.points[0][temp[2]]+240,exe.points[1][temp[2]]+180),
@@ -160,5 +177,9 @@ while True:
     if event.type == QUIT:
       pygame.quit()
       sys.exit()
-  string = f"fps:{int(1/(perf_counter()-timestamp))}"
+  fps = int(1/(perf_counter()-timestamp))
   timestamp = perf_counter()
+  if fps <= limit*0.9:frame -= 1
+  elif fps >= limit*1.08:frame += 1
+  print(frame)
+  sleep(1/(limit-frame))
