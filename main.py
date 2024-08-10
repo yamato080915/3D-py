@@ -145,21 +145,23 @@ while True:
   count += 1
   root.fill((255,255,255))
   if count >= fps:
-    text = font.render(f"fps:{fps}   render latency:{-1*frame}ms", False, (0,0,0), (255, 255, 255))
+    text = font.render(f"fps:{fps}   render latency:{round((1/limit-1/(limit-frame))*1000, 2)}ms", False, (0,0,0), (255, 255, 255))
     count = 0
+  #text = font.render(f"fps:{fps}   render latency:{-1*frame}ms", False, (0,0,0), (255, 255, 255))
   root.blit(text, (0,0))
   mouseX, mouseY = pygame.mouse.get_pos()
-  zx = mouseX*3/4-180
-  yz = -1*mouseY-180
-  exe.__init__()
-  for i in range(len(x)):
-    exe.mov(x[i],y[i],z[i])
-  exe.points[0] = [exe.xto[i]*screen/(exe.pers-exe.zto[i]) for i in range(len(x))]
-  exe.points[1] = [exe.yto[i]*screen/(exe.pers-exe.zto[i]) for i in range(len(x))]
-  for i in graphics:
-    exe.calcdirection(i)
-  exe.polygons = [[i, graphics[i][0], graphics[i][temp-1], graphics[i][temp], cos(exe.shader[i])*(1-reflection)+reflection, (exe.zto[graphics[i][0]]+exe.zto[graphics[i][temp-1]]+exe.zto[graphics[i][temp]])/3] for i in range(len(graphics)) for temp in range(2, len(graphics[i])) if exe.direction[i]<90]
-  zsorted = exe.zsort()
+  if mouseX*3/4-180 != zx or -1*mouseY-180 != yz:
+    exe.__init__()
+    zx = mouseX*3/4-180
+    yz = -1*mouseY-180
+    for i in range(len(x)):
+      exe.mov(x[i],y[i],z[i])
+    exe.points[0] = [exe.xto[i]*screen/(exe.pers-exe.zto[i]) for i in range(len(x))]
+    exe.points[1] = [exe.yto[i]*screen/(exe.pers-exe.zto[i]) for i in range(len(x))]
+    for i in graphics:
+      exe.calcdirection(i)
+    exe.polygons = [[i, graphics[i][0], graphics[i][temp-1], graphics[i][temp], cos(exe.shader[i])*(1-reflection)+reflection, (exe.zto[graphics[i][0]]+exe.zto[graphics[i][temp-1]]+exe.zto[graphics[i][temp]])/3] for i in range(len(graphics)) for temp in range(2, len(graphics[i])) if exe.direction[i]<90]
+    zsorted = exe.zsort()
   #graphic
   for i in zsorted:
     temp = exe.polygons[i]
@@ -181,5 +183,4 @@ while True:
   timestamp = perf_counter()
   if fps <= limit*0.9:frame -= 1
   elif fps >= limit*1.08:frame += 1
-  print(frame)
   sleep(1/(limit-frame))
