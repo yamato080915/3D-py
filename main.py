@@ -133,7 +133,7 @@ screen = 240/tan(fov/2)
 exe = main()
 fps = 0
 frame = 0
-font = pygame.font.SysFont(None, 20)
+font = pygame.font.SysFont(None, 18)
 timestamp = perf_counter()
 count = 0
 limit = 120
@@ -147,7 +147,6 @@ while True:
   if count >= fps:
     text = font.render(f"fps:{fps}   render latency:{round((1/limit-1/(limit-frame))*1000, 2)}ms", False, (0,0,0), (255, 255, 255))
     count = 0
-  #text = font.render(f"fps:{fps}   render latency:{-1*frame}ms", False, (0,0,0), (255, 255, 255))
   root.blit(text, (0,0))
   mouseX, mouseY = pygame.mouse.get_pos()
   if mouseX*3/4-180 != zx or -1*mouseY-180 != yz:
