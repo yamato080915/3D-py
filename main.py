@@ -3,18 +3,47 @@ from pygame.locals import *
 from tkinter import filedialog
 import stl_to_json as stl
 from ast import literal_eval
-from time import perf_counter
-
-f = filedialog.askopenfilename(title="select 3d data", filetypes=[("supported files", ".json .stl .STL"), ("json files", ".json"), ("stl files", ".stl .STL"), ("all files", "*.*")])
-if ".stl" in f.lower():
-  data = stl.main(f)
-elif ".json" in f:
-  with open(f, "r", encoding="utf-8") as f:
-    data = json.load(f)
-else:sys.exit()
+from time import perf_counter, sleep
+import threading
 
 pygame.init()
 root = pygame.display.set_mode((480,360))
+
+def fileselect(f):
+  global data, x, y, z, graphics, color, scr
+  data = ""
+  if ".stl" in f.lower():
+    data = stl.main(f)
+  elif ".json" in f.lower():
+    with open(f, "r", encoding="utf-8") as f:
+      data = json.load(f)
+  if data != "":
+    x = [literal_eval(i)[0] for i in data["points"]]
+    y = [literal_eval(i)[1] for i in data["points"]]
+    z = [literal_eval(i)[2] for i in data["points"]]
+    graphics = [literal_eval(i) for i in data["surface"]]
+    color= [literal_eval(i) for i in data["color"]]
+    scr=data["screen"]
+
+f = ""
+def update():
+  global f
+  f = filedialog.askopenfilename(title="select 3d data", filetypes=[("supported files", ".json .stl"), ("json files", ".json"), ("stl files", ".stl .STL"), ("all files", "*.*")])
+def thread():
+  th = threading.Thread(target=update, daemon=True)
+  th.start()
+  while th.is_alive():
+    root.fill((255,255,255))
+    pygame.display.update()
+    for event in pygame.event.get():
+      if event.type == QUIT:
+        pygame.quit()
+        sys.exit()
+      if f!="":break
+thread()
+fileselect(f)
+
+if data == "":sys.exit()
 
 def sin(theta):
   return math.sin(math.radians(theta))
@@ -32,12 +61,6 @@ xy=0
 yz=0
 zx=0
 fov = atan(240/420)*2
-x = [literal_eval(i)[0] for i in data["points"]]
-y = [literal_eval(i)[1] for i in data["points"]]
-z = [literal_eval(i)[2] for i in data["points"]]
-graphics = [literal_eval(i) for i in data["surface"]]
-color= [literal_eval(i) for i in data["color"]]
-scr=data["screen"]
 light = (-100,-200,400)#???y座標は正じゃないとおかしい　負にすると正しい動作をする
 def rgb(hsv, shade):
   h = hsv[0]/100
@@ -108,36 +131,41 @@ class main:
 
 screen = 240/tan(fov/2)
 exe = main()
-FONTNAME = None
-FONTSIZE = 30
-string = "fps:0"
-font = pygame.font.SysFont(FONTNAME, FONTSIZE)
+fps = 0
+frame = 0
+font = pygame.font.SysFont(None, 18)
 timestamp = perf_counter()
 count = 0
+limit = 120
 while True:
+  key_pressed = pygame.key.get_pressed()
+  if key_pressed[pygame.K_LCTRL] and key_pressed[pygame.K_o]:
+    thread()
+    fileselect(f)
   count += 1
   root.fill((255,255,255))
-  if count >= int(string.replace("fps:", "")):
-    text = font.render(string, False, (0,0,0), (255, 255, 255))
+  if count >= fps:
+    text = font.render(f"fps:{fps}   render latency:{round((1/limit-1/(limit-frame))*1000, 2)}ms", False, (0,0,0), (255, 255, 255))
     count = 0
   root.blit(text, (0,0))
   mouseX, mouseY = pygame.mouse.get_pos()
-  zx = mouseX*3/4-180
-  yz = -1*mouseY-180
-  exe.__init__()
-  for i in range(len(x)):
-    exe.mov(x[i],y[i],z[i])
-  exe.points[0] = [exe.xto[i]*screen/(exe.pers-exe.zto[i]) for i in range(len(x))]
-  exe.points[1] = [exe.yto[i]*screen/(exe.pers-exe.zto[i]) for i in range(len(x))]
-  for i in graphics:
-    exe.calcdirection(i)
-  exe.polygons = [[i, graphics[i][0], graphics[i][temp-1], graphics[i][temp], cos(exe.shader[i])*(1-reflection)+reflection, (exe.zto[graphics[i][0]]+exe.zto[graphics[i][temp-1]]+exe.zto[graphics[i][temp]])/3] for i in range(len(graphics)) for temp in range(2, len(graphics[i])) if exe.direction[i]<90]
-  zsorted = exe.zsort()
+  if mouseX*3/4-180 != zx or -1*mouseY-180 != yz:
+    exe.__init__()
+    zx = mouseX*3/4-180
+    yz = -1*mouseY-180
+    for i in range(len(x)):
+      exe.mov(x[i],y[i],z[i])
+    exe.points[0] = [exe.xto[i]*screen/(exe.pers-exe.zto[i]) for i in range(len(x))]
+    exe.points[1] = [exe.yto[i]*screen/(exe.pers-exe.zto[i]) for i in range(len(x))]
+    for i in graphics:
+      exe.calcdirection(i)
+    exe.polygons = [[i, graphics[i][0], graphics[i][temp-1], graphics[i][temp], cos(exe.shader[i])*(1-reflection)+reflection, (exe.zto[graphics[i][0]]+exe.zto[graphics[i][temp-1]]+exe.zto[graphics[i][temp]])/3] for i in range(len(graphics)) for temp in range(2, len(graphics[i])) if exe.direction[i]<90]
+    zsorted = exe.zsort()
   #graphic
   for i in zsorted:
     temp = exe.polygons[i]
     pygame.draw.polygon(
-      root, rgb(color[temp[0]], temp[4]), #TODO shading
+      root, rgb(color[temp[0]], temp[4]), 
       [
         (exe.points[0][temp[1]]+240,exe.points[1][temp[1]]+180),
         (exe.points[0][temp[2]]+240,exe.points[1][temp[2]]+180),
@@ -150,5 +178,8 @@ while True:
     if event.type == QUIT:
       pygame.quit()
       sys.exit()
-  string = f"fps:{int(1/(perf_counter()-timestamp))}"
+  fps = int(1/(perf_counter()-timestamp))
   timestamp = perf_counter()
+  if fps <= limit*0.9:frame -= 1
+  elif fps >= limit*1.08:frame += 1
+  sleep(1/(limit-frame))
