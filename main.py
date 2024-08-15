@@ -61,7 +61,7 @@ xy=0
 yz=0
 zx=0
 fov = atan(240/420)*2
-light = (-100,-200,400)#???y座標は正じゃないとおかしい　負にすると正しい動作をする
+light = (-100,200,400)
 def rgb(hsv, shade):
   h = hsv[0]/100
   s = hsv[1]/100
@@ -150,16 +150,16 @@ while True:
   root.blit(text, (0,0))
   mouseX, mouseY = pygame.mouse.get_pos()
   if mouseX*3/4-180 != zx or -1*mouseY-180 != yz:
-    exe.__init__()
     zx = mouseX*3/4-180
-    yz = -1*mouseY-180
+    yz = mouseY-180
+    exe.__init__()
     for i in range(len(x)):
       exe.mov(x[i],y[i],z[i])
     exe.points[0] = [exe.xto[i]*screen/(exe.pers-exe.zto[i]) for i in range(len(x))]
     exe.points[1] = [exe.yto[i]*screen/(exe.pers-exe.zto[i]) for i in range(len(x))]
     for i in graphics:
       exe.calcdirection(i)
-    exe.polygons = [[i, graphics[i][0], graphics[i][temp-1], graphics[i][temp], cos(exe.shader[i])*(1-reflection)+reflection, (exe.zto[graphics[i][0]]+exe.zto[graphics[i][temp-1]]+exe.zto[graphics[i][temp]])/3] for i in range(len(graphics)) for temp in range(2, len(graphics[i])) if exe.direction[i]<90]
+      exe.polygons = [[i, graphics[i][0], graphics[i][temp-1], graphics[i][temp], cos(exe.shader[i])*(1-reflection)+reflection, (exe.zto[graphics[i][0]]+exe.zto[graphics[i][temp-1]]+exe.zto[graphics[i][temp]])/3] for i in range(len(graphics)) for temp in range(2, len(graphics[i])) if exe.direction[i]<90]
     zsorted = exe.zsort()
   #graphic
   for i in zsorted:
@@ -167,9 +167,9 @@ while True:
     pygame.draw.polygon(
       root, rgb(color[temp[0]], temp[4]), 
       [
-        (exe.points[0][temp[1]]+240,exe.points[1][temp[1]]+180),
-        (exe.points[0][temp[2]]+240,exe.points[1][temp[2]]+180),
-        (exe.points[0][temp[3]]+240,exe.points[1][temp[3]]+180)
+        (exe.points[0][temp[1]]+240,-1*exe.points[1][temp[1]]+180),
+        (exe.points[0][temp[2]]+240,-1*exe.points[1][temp[2]]+180),
+        (exe.points[0][temp[3]]+240,-1*exe.points[1][temp[3]]+180)
       ],
       0
     )
