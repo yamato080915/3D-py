@@ -1,10 +1,9 @@
-import pygame, math, sys, json, colorsys
+import pygame, math, sys, json, colorsys, threading
 from pygame.locals import *
 from tkinter import filedialog
 import stl_to_json as stl
 from ast import literal_eval
 from time import perf_counter, sleep
-import threading
 
 pygame.init()
 root = pygame.display.set_mode((480,360))
@@ -28,7 +27,7 @@ def fileselect(f):
 f = ""
 def update():
   global f
-  f = filedialog.askopenfilename(title="select 3d data", filetypes=[("supported files", ".json .stl"), ("json files", ".json"), ("stl files", ".stl .STL"), ("all files", "*.*")])
+  f = filedialog.askopenfilename(title="Select 3d data", filetypes=[("supported files", ".json .stl"), ("json files", ".json"), ("stl files", ".stl .STL"), ("all files", "*.*")])
 def thread():
   th = threading.Thread(target=update, daemon=True)
   th.start()
@@ -131,35 +130,35 @@ class main:
 
 screen = 240/tan(fov/2)
 exe = main()
-fps = 0
+fps = 120
 frame = 0
-font = pygame.font.SysFont(None, 18)
+font = pygame.font.SysFont(None, 20)
 timestamp = perf_counter()
-count = 0
+count = 120
 limit = 120
 while True:
+  root.fill((255,255,255))
   key_pressed = pygame.key.get_pressed()
   if key_pressed[pygame.K_LCTRL] and key_pressed[pygame.K_o]:
     thread()
     fileselect(f)
   count += 1
-  root.fill((255,255,255))
   if count >= fps:
-    text = font.render(f"fps:{fps}   render latency:{round((1/limit-1/(limit-frame))*1000, 2)}ms", False, (0,0,0), (255, 255, 255))
+    text = font.render(f"fps:{round(fps, 1)}   render latency:{round((1/fps-1/(limit-frame))*1000, 2)}ms", False, (0,0,0), (255, 255, 255))
     count = 0
   root.blit(text, (0,0))
   mouseX, mouseY = pygame.mouse.get_pos()
   if mouseX*3/4-180 != zx or -1*mouseY-180 != yz:
-    exe.__init__()
     zx = mouseX*3/4-180
     yz = -1*mouseY-180
+    exe.__init__()
     for i in range(len(x)):
       exe.mov(x[i],y[i],z[i])
     exe.points[0] = [exe.xto[i]*screen/(exe.pers-exe.zto[i]) for i in range(len(x))]
     exe.points[1] = [exe.yto[i]*screen/(exe.pers-exe.zto[i]) for i in range(len(x))]
     for i in graphics:
       exe.calcdirection(i)
-    exe.polygons = [[i, graphics[i][0], graphics[i][temp-1], graphics[i][temp], cos(exe.shader[i])*(1-reflection)+reflection, (exe.zto[graphics[i][0]]+exe.zto[graphics[i][temp-1]]+exe.zto[graphics[i][temp]])/3] for i in range(len(graphics)) for temp in range(2, len(graphics[i])) if exe.direction[i]<90]
+    exe.polygons = [[i, n[0], n[temp-1], n[temp], cos(exe.shader[i])*(1-reflection)+reflection, (exe.zto[n[0]]+exe.zto[n[temp-1]]+exe.zto[n[temp]])/3] for i,n in enumerate(graphics) for temp in range(2, len(graphics[i])) if exe.direction[i]<90]
     zsorted = exe.zsort()
   #graphic
   for i in zsorted:
@@ -178,7 +177,7 @@ while True:
     if event.type == QUIT:
       pygame.quit()
       sys.exit()
-  fps = int(1/(perf_counter()-timestamp))
+  fps = 1/(perf_counter()-timestamp)
   timestamp = perf_counter()
   if fps <= limit*0.9:frame -= 1
   elif fps >= limit*1.08:frame += 1
