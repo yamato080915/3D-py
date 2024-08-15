@@ -61,6 +61,7 @@ yz=0
 zx=0
 fov = atan(240/420)*2
 light = (-100,-200,400)#???y座標は正じゃないとおかしい　負にすると正しい動作をする
+size = 1
 def rgb(hsv, shade):
   h = hsv[0]/100
   s = hsv[1]/100
@@ -144,7 +145,7 @@ while True:
     fileselect(f)
   count += 1
   if count >= fps:
-    text = font.render(f"fps:{round(fps, 1)}   render latency:{round((1/fps-1/(limit-frame))*1000, 2)}ms", False, (0,0,0), (255, 255, 255))
+    text = font.render(f"fps:{round(fps, 1)}   render latency:{round((1/fps-1/(limit-frame))*1000, 2)}ms", True, (0,0,0), (255, 255, 255))
     count = 0
   root.blit(text, (0,0))
   mouseX, mouseY = pygame.mouse.get_pos()
@@ -166,9 +167,9 @@ while True:
     pygame.draw.polygon(
       root, rgb(color[temp[0]], temp[4]), 
       [
-        (exe.points[0][temp[1]]+240,exe.points[1][temp[1]]+180),
-        (exe.points[0][temp[2]]+240,exe.points[1][temp[2]]+180),
-        (exe.points[0][temp[3]]+240,exe.points[1][temp[3]]+180)
+        (exe.points[0][temp[1]]*size+240,exe.points[1][temp[1]]*size+180),
+        (exe.points[0][temp[2]]*size+240,exe.points[1][temp[2]]*size+180),
+        (exe.points[0][temp[3]]*size+240,exe.points[1][temp[3]]*size+180)
       ],
       0
     )
@@ -177,6 +178,10 @@ while True:
     if event.type == QUIT:
       pygame.quit()
       sys.exit()
+    if key_pressed[pygame.K_LCTRL] and event.type == pygame.MOUSEWHEEL:
+      size += event.y*0.05
+      if size <= 0:
+        size = 0.05
   fps = 1/(perf_counter()-timestamp)
   timestamp = perf_counter()
   if fps <= limit*0.9:frame -= 1
