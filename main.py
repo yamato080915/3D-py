@@ -44,7 +44,7 @@ xy=0
 yz=0
 zx=0
 fov = atan(240/420)*2
-light = (-100,-200,400)#???y座標は正じゃないとおかしい　負にすると正しい動作をする
+light = (-100,200,400)
 def rgb(hsv, shade):
   h = hsv[0]/100
   s = hsv[1]/100
@@ -133,7 +133,7 @@ while True:
   root.blit(text, (0,0))
   mouseX, mouseY = pygame.mouse.get_pos()
   zx = mouseX*3/4-180
-  yz = -1*mouseY-180
+  yz = mouseY-180
   exe.__init__()
   for i in range(len(x)):
     exe.mov(x[i],y[i],z[i])
@@ -149,9 +149,9 @@ while True:
     pygame.draw.polygon(
       root, rgb(color[temp[0]], temp[4]), #TODO shading
       [
-        (exe.points[0][temp[1]]+240,exe.points[1][temp[1]]+180),
-        (exe.points[0][temp[2]]+240,exe.points[1][temp[2]]+180),
-        (exe.points[0][temp[3]]+240,exe.points[1][temp[3]]+180)
+        (exe.points[0][temp[1]]+240,-1*exe.points[1][temp[1]]+180),
+        (exe.points[0][temp[2]]+240,-1*exe.points[1][temp[2]]+180),
+        (exe.points[0][temp[3]]+240,-1*exe.points[1][temp[3]]+180)
       ],
       0
     )
