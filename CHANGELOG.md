@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Add
-- Object display size configuration
+- Object display size configuration(LeftCtrl + ScrollWheel)
+- Wire frame Mode(Left click)
 
 ### Fix
 - Y-coordinate issue(https://github.com/yamato080915/3D-py/issues/2)
@@ -15,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.2.0] - 2024-08-13
 ### Added
 - Show fps and render latency
-- Control+O key binding
+- open filedialog(Control+O)
 
 ## Changed
 - Calculation process optimization
