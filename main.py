@@ -159,19 +159,18 @@ while True:
     exe.points[1] = [exe.yto[i]*screen/(exe.pers-exe.zto[i]) for i in range(len(x))]
     for i in graphics:
       exe.calcdirection(i)
-    exe.polygons = [[i, graphics[i][0], graphics[i][temp-1], graphics[i][temp], cos(exe.shader[i])*(1-reflection)+reflection, (exe.zto[graphics[i][0]]+exe.zto[graphics[i][temp-1]]+exe.zto[graphics[i][temp]])/3] for i in range(len(graphics)) for temp in range(2, len(graphics[i])) if exe.direction[i]<90]
+    exe.polygons = [[i, graphics[i][0], graphics[i][temp-1], graphics[i][temp], cos(exe.shader[i])*(0.95-reflection)+reflection, (exe.zto[graphics[i][0]]+exe.zto[graphics[i][temp-1]]+exe.zto[graphics[i][temp]])/3] for i in range(len(graphics)) for temp in range(2, len(graphics[i])) if exe.direction[i]<90]
     zsorted = exe.zsort()
-  #graphic
   for i in zsorted:
     temp = exe.polygons[i]
     pygame.draw.polygon(
       root, rgb(color[temp[0]], temp[4]), 
       [
-        (exe.points[0][temp[1]]+240,-1*exe.points[1][temp[1]]+180),
-        (exe.points[0][temp[2]]+240,-1*exe.points[1][temp[2]]+180),
-        (exe.points[0][temp[3]]+240,-1*exe.points[1][temp[3]]+180)
+        (size*exe.points[0][temp[1]]+240,-size*exe.points[1][temp[1]]+180),
+        (size*exe.points[0][temp[2]]+240,-size*exe.points[1][temp[2]]+180),
+        (size*exe.points[0][temp[3]]+240,-size*exe.points[1][temp[3]]+180)
       ],
-      0
+      pygame.mouse.get_pressed()[0]*2
     )
   pygame.display.update()
   for event in pygame.event.get():
