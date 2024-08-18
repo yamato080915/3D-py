@@ -132,22 +132,22 @@ class main:
 screen = 240/tan(fov/2)
 exe = main()
 fps = 120
-frame = 0
-font = pygame.font.SysFont(None, 20)
-timestamp = perf_counter()
-count = 120
 limit = 120
+latency = 0
+font = pygame.font.SysFont(None, 20)
+WireBackface = 2
+clock = pygame.time.Clock()
 while True:
+  timestamp = perf_counter()
   root.fill((255,255,255))
   key_pressed = pygame.key.get_pressed()
   if key_pressed[pygame.K_LCTRL] and key_pressed[pygame.K_o]:
     thread()
     fileselect(f)
-  count += 1
-  if count >= fps:
-    text = font.render(f"fps:{round(fps, 1)}   render latency:{round((1/fps-1/(limit-frame))*1000, 2)}ms", True, (0,0,0), (255, 255, 255))
-    count = 0
-  root.blit(text, (0,0))
+  fps = clock.get_fps()
+  if fps != 0.0:
+    text = font.render(f"fps:{round(fps, 1)}   render latency:{round(1000*latency, 1)}ms", True, (0,0,0), (255, 255, 255))
+    root.blit(text, (0,0))
   mouseX, mouseY = pygame.mouse.get_pos()
   if mouseX*3/4-180 != zx or -1*mouseY-180 != yz:
     zx = mouseX*3/4-180
@@ -159,7 +159,7 @@ while True:
     exe.points[1] = [exe.yto[i]*screen/(exe.pers-exe.zto[i]) for i in range(len(x))]
     for i in graphics:
       exe.calcdirection(i)
-    exe.polygons = [[i, graphics[i][0], graphics[i][temp-1], graphics[i][temp], cos(exe.shader[i])*(0.95-reflection)+reflection, (exe.zto[graphics[i][0]]+exe.zto[graphics[i][temp-1]]+exe.zto[graphics[i][temp]])/3] for i in range(len(graphics)) for temp in range(2, len(graphics[i])) if exe.direction[i]<90]
+    exe.polygons = [[i, graphics[i][0], graphics[i][temp-1], graphics[i][temp], cos(exe.shader[i])*(0.95-reflection)+reflection, (exe.zto[graphics[i][0]]+exe.zto[graphics[i][temp-1]]+exe.zto[graphics[i][temp]])/3, exe.direction[i] < 90] for i in range(len(graphics)) for temp in range(2, len(graphics[i])) if exe.direction[i]<90 or (pygame.mouse.get_pressed()[0] and WireBackface)]
     zsorted = exe.zsort()
   for i in zsorted:
     temp = exe.polygons[i]
@@ -170,8 +170,9 @@ while True:
         (size*exe.points[0][temp[2]]+240,-size*exe.points[1][temp[2]]+180),
         (size*exe.points[0][temp[3]]+240,-size*exe.points[1][temp[3]]+180)
       ],
-      pygame.mouse.get_pressed()[0]*2
+      pygame.mouse.get_pressed()[0]*(temp[6] * (2 + WireBackface) + WireBackface)
     )
+  latency = perf_counter()-timestamp
   pygame.display.update()
   for event in pygame.event.get():
     if event.type == QUIT:
@@ -181,8 +182,5 @@ while True:
       size += event.y*0.05
       if size <= 0:
         size = 0.05
-  fps = 1/(perf_counter()-timestamp)
-  timestamp = perf_counter()
-  if fps <= limit*0.9:frame -= 1
-  elif fps >= limit*1.08:frame += 1
-  sleep(1/(limit-frame))
+  clock.tick(limit)
+  
