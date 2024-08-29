@@ -3,7 +3,7 @@ from pygame.locals import *
 from tkinter import filedialog
 import stl_to_json as stl
 from ast import literal_eval
-from time import perf_counter, sleep
+from time import perf_counter
 
 pygame.init()
 root = pygame.display.set_mode((480,360))
@@ -145,9 +145,6 @@ while True:
     thread()
     fileselect(f)
   fps = clock.get_fps()
-  if fps != 0.0:
-    text = font.render(f"fps:{round(fps, 1)}   render latency:{round(1000*latency, 1)}ms", True, (0,0,0), (255, 255, 255))
-    root.blit(text, (0,0))
   mouseX, mouseY = pygame.mouse.get_pos()
   if mouseX*3/4-180 != zx or -1*mouseY-180 != yz:
     zx = mouseX*3/4-180
@@ -172,6 +169,9 @@ while True:
       ],
       pygame.mouse.get_pressed()[0]*(temp[6] * (2 + WireBackface) + WireBackface)
     )
+  if fps != 0.0:
+    text = font.render(f"fps:{round(fps, 1)}   render latency:{round(1000*latency, 1)}ms", True, (0,0,0), (255, 255, 255))
+    root.blit(text, (0,0))
   latency = perf_counter()-timestamp
   pygame.display.update()
   for event in pygame.event.get():
