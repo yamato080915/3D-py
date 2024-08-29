@@ -5,10 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Add
+- Object display size configuration(LeftCtrl + ScrollWheel)
+- Wire frame Mode(Left click)
+
+### Fix
+- Y-coordinate issue(https://github.com/yamato080915/3D-py/issues/2)
+
 ## [1.2.0] - 2024-08-13
 ### Added
 - Show fps and render latency
-- Control+O key binding
+- open filedialog(Control+O)
 
 ## Changed
 - Calculation process optimization
@@ -41,6 +49,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [Unreleased]: https://github.com/yamato080915/3D-py/compare/v1.2.0...dev
 [1.2.0]: https://github.com/yamato080915/3D-py/compare/v1.1.1...v1.2.0
-[1.1.1]: https://github.com/yamato080915/3D-py/compare/v1.1.0...v1.1.1
-[1.1.0]: https://github.com/yamato080915/3D-py/compare/v1.0.0...v1.1.0
-[1.0.0]: https://github.com/yamato080915/3D-py/releases/tag/v1.0.0
+[1.1.1]: https://github.com/yamato080915/3D-py/compare/fde01f384b2ec32d1444843ad6fd0fd104edf44b...v1.1.1
+[1.1.0]: https://github.com/yamato080915/3D-py/compare/f9eb35d8c04de6208d334a009a462f50ac5e8531...fde01f384b2ec32d1444843ad6fd0fd104edf44b
+[1.0.0]: https://github.com/yamato080915/3D-py/tree/f9eb35d8c04de6208d334a009a462f50ac5e8531
