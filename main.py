@@ -2,6 +2,7 @@ import pygame, math, sys, json, colorsys, threading
 from pygame.locals import *
 from tkinter import filedialog
 import stl_to_json as stl
+import numpy as np
 from ast import literal_eval
 from time import perf_counter
 
@@ -95,6 +96,28 @@ class main:
         if not j in result:
           result.append(j)
     return result
+  def calcdirection_np(self, g):
+    cam = np.array([0,0,self.pers])
+    lightv = np.array(light)
+    g0 = np.array([self.xto[g[0]], self.yto[g[0]], self.zto[g[0]]])
+    g1 = np.array([self.xto[g[1]], self.yto[g[1]], self.zto[g[1]]])
+    g_1 = np.array([self.xto[g[-1]], self.yto[g[-1]], self.zto[g[-1]]])
+    g1_g0 = g1-g0
+    g_1_g0 = g_1-g0
+    normal_vec = np.cross(g1_g0,g_1_g0)
+    cam_g0 = cam-g0
+    direction = acos(np.dot(normal_vec, cam_g0)/(np.linalg.norm(normal_vec)*np.linalg.norm(cam_g0)))
+    gravity = [0,0,0]
+    for i in g:
+      gravity[0]+=self.xto[i]/len(g)
+      gravity[1]+=self.yto[i]/len(g)
+      gravity[2]+=self.zto[i]/len(g)
+    gravity = np.array(gravity)
+    light_gravity = lightv-gravity
+    shader = acos(np.dot(normal_vec, light_gravity)/(np.linalg.norm(normal_vec)*np.linalg.norm(light_gravity)))
+    if shader > 90:shader = 90
+    self.direction.append(direction)
+    self.shader.append(shader)
   def calcdirection(self, g):
     self.vector = []
     self.vector.append(self.xto[g[0]])
@@ -124,6 +147,13 @@ class main:
     self.shader.append(acos((self.vector[9]*self.vector[15]+self.vector[10]*self.vector[16]+self.vector[11]*self.vector[17])/math.sqrt((self.vector[9]**2+self.vector[10]**2+self.vector[11]**2)*(self.vector[15]**2+self.vector[16]**2+self.vector[17]**2))))
     if self.shader[-1]>90:
       self.shader[-1]=90
+  def mov_np(self,x,y,z):
+    point = np.array([x,y,z])
+    rot = np.dot(np.dot(rotx,roty),rotz)
+    rotpoint = np.dot(rot, point)
+    self.xto.append(rotpoint[0])
+    self.yto.append(rotpoint[1])
+    self.zto.append(rotpoint[2])
   def mov(self,x,y,z):
     self.xto.append(self.coszx*self.cosxy*x-self.coszx*self.sinxy*y+self.sinzx*z)
     self.yto.append((self.sinyz*self.sinzx*self.cosxy+self.cosyz*self.sinxy)*x+(-1*self.sinyz*self.sinzx*self.sinxy+self.cosyz*self.cosxy)*y-self.sinyz*self.coszx*z)
@@ -150,14 +180,18 @@ while True:
     zx = mouseX*3/4-180
     yz = mouseY-180
     exe.__init__()
+    rotx = np.array([[1,0,0],[0,exe.cosyz, -exe.sinyz],[0, exe.sinyz, exe.cosyz]])
+    roty = np.array([[exe.coszx, 0, exe.sinzx],[0,1,0], [-exe.sinzx, 0, exe.coszx]])
+    rotz = np.array([[exe.cosxy, -exe.sinxy, 0],[exe.sinxy, exe.cosxy, 0],[0,0,1]])
     for i in range(len(x)):
-      exe.mov(x[i],y[i],z[i])
+      exe.mov_np(x[i],y[i],z[i])
     exe.points[0] = [exe.xto[i]*screen/(exe.pers-exe.zto[i]) for i in range(len(x))]
     exe.points[1] = [exe.yto[i]*screen/(exe.pers-exe.zto[i]) for i in range(len(x))]
     for i in graphics:
       exe.calcdirection(i)
     exe.polygons = [[i, graphics[i][0], graphics[i][temp-1], graphics[i][temp], cos(exe.shader[i])*(0.95-reflection)+reflection, (exe.zto[graphics[i][0]]+exe.zto[graphics[i][temp-1]]+exe.zto[graphics[i][temp]])/3, exe.direction[i] < 90] for i in range(len(graphics)) for temp in range(2, len(graphics[i])) if exe.direction[i]<90 or (pygame.mouse.get_pressed()[0] and WireBackface)]
     zsorted = exe.zsort()
+  mousepressed = pygame.mouse.get_pressed()
   for i in zsorted:
     temp = exe.polygons[i]
     pygame.draw.polygon(
@@ -167,7 +201,7 @@ while True:
         (size*exe.points[0][temp[2]]+240,-size*exe.points[1][temp[2]]+180),
         (size*exe.points[0][temp[3]]+240,-size*exe.points[1][temp[3]]+180)
       ],
-      pygame.mouse.get_pressed()[0]*(temp[6] * (2 + WireBackface) + WireBackface)
+      mousepressed[0]*(temp[6] * (2 + WireBackface) + WireBackface)
     )
   if fps != 0.0:
     text = font.render(f"fps:{round(fps, 1)}   render latency:{round(1000*latency, 1)}ms", True, (0,0,0), (255, 255, 255))
